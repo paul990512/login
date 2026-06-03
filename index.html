@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系統登入模擬</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e9ecef;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 320px;
+            text-align: center;
+        }
+        h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .instructions {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 25px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+            text-align: left;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+            font-size: 14px;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+            font-family: monospace;
+        }
+        input[type="password"] {
+            letter-spacing: 3px;
+        }
+        button {
+            width: 100%;
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #0b5ed7;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            min-height: 22px;
+        }
+        .error {
+            color: #dc3545;
+        }
+        .success {
+            color: #198754;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h2>系統登入</h2>
+    
+    <div class="instructions">
+        <strong>登入提示：</strong><br>
+        密碼：6767 + 身分證末四碼<br>
+        <span style="color: #0d6efd; font-weight: bold;"></span>
+    </div>
+    
+    <div class="input-group">
+        <label for="usernameInput">使用者帳號</label>
+        <input type="text" id="usernameInput" value="admin" placeholder="請輸入帳號">
+    </div>
+
+    <div class="input-group">
+        <label for="passwordInput">使用者密碼</label>
+        <input type="password" id="passwordInput" maxlength="8" placeholder="請輸入 8 位數密碼" onkeypress="return isNumberKey(event)">
+    </div>
+    
+    <button onclick="checkLogin()">登入</button>
+    
+    <div id="message" class="message"></div>
+</div>
+
+<script>
+    // 產生隨機的 4 位數身分證末碼
+    const randomIdSuffix = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    // 組合出正確的 8 位數密碼 (6767 + 隨機末四碼)
+    const correctPassword = "6767" + randomIdSuffix;
+
+    // 將本次產生的末四碼顯示在畫面上，讓使用者知道要輸入什麼
+    document.getElementById("id-display").textContent = randomIdSuffix;
+
+    const messageElement = document.getElementById("message");
+
+    // 密碼欄位限制只能輸入數字
+    function isNumberKey(evt) {
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            return false;
+        }
+        return true;
+    }
+
+    function checkLogin() {
+        const username = document.getElementById("usernameInput").value;
+        const password = document.getElementById("passwordInput").value;
+
+        // 1. 檢查帳號是否正確
+        if (username !== "admin") {
+            messageElement.textContent = "帳號不存在或輸入錯誤";
+            messageElement.className = "message error";
+            return;
+        }
+
+        // 2. 檢查密碼長度
+        if (password.length !== 8) {
+            messageElement.textContent = "密碼格式錯誤，請輸入完整的 8 位數字";
+            messageElement.className = "message error";
+            return;
+        }
+
+        // 3. 驗證密碼是否正確
+        if (password === correctPassword) {
+            messageElement.textContent = "登入成功！";
+            messageElement.className = "message success";
+            
+            // 登入成功後將輸入框禁用，模擬進入系統的狀態
+            document.getElementById("usernameInput").disabled = true;
+            document.getElementById("passwordInput").disabled = true;
+        } else {
+            messageElement.textContent = "密碼錯誤";
+            messageElement.className = "message error";
+            
+            // 清空密碼框方便重新輸入
+            document.getElementById("passwordInput").value = "";
+            document.getElementById("passwordInput").focus();
+        }
+    }
+</script>
+
+</body>
+</html>
